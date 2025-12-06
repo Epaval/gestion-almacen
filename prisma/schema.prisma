@@ -1,0 +1,58 @@
+ generator client {
+  provider = "prisma-client-js"
+  engineType = "client"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Usuario {
+  id       Int    @id @default(autoincrement())
+  nombre   String
+  email    String @unique
+  password String
+  rol      String @default("OPERARIO")
+}
+
+ model Producto {
+  id          Int      @id @default(autoincrement())
+  nombre      String
+  codigoBarras String? @unique
+  qrCode      String? @unique
+  descripcion String?
+  cantidad Int    @default(0) 
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relación muchos a muchos con ubicaciones
+  ubicaciones AsignacionProductoUbicacion[]
+}
+
+model Ubicacion {
+  id          Int      @id @default(autoincrement())
+  pasillo     Int
+  lado        String
+  letra       String
+  nivel       Int
+  nombre      String   @unique
+  coordenadaX Int
+  coordenadaY Int
+  ancho       Int      @default(60)
+  alto        Int      @default(40)
+
+  productos   AsignacionProductoUbicacion[]
+}
+
+ 
+model AsignacionProductoUbicacion {
+  id          Int      @id @default(autoincrement())
+  productoId  Int
+  ubicacionId Int
+  cantidad    Int      @default(1)
+
+  producto    Producto  @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  ubicacion   Ubicacion @relation(fields: [ubicacionId], references: [id], onDelete: Cascade)
+
+  @@unique([productoId, ubicacionId])  
+}
