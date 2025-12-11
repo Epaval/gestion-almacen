@@ -5,7 +5,7 @@ import type { Metadata } from 'next';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Login',
+  title: 'Login - Almacén Pro',
 };
 
 export default function LoginLayout({
@@ -15,7 +15,10 @@ export default function LoginLayout({
 }) {
   return (
     <html lang="es">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        {children}
+         
+      </body>
     </html>
   );
 }

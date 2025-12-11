@@ -51,7 +51,7 @@ export async function GET(request: Request) {
         nombre: producto.nombre,
         codigoBarras: producto.codigoBarras,
         qrCode: producto.qrCode,
-        cantidadTotal: producto.cantidad,
+        cantidadTotal: producto.cantidadTotal,
       },
       ubicaciones,
     });

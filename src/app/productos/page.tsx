@@ -21,12 +21,7 @@ export default async function ProductosPage() {
   };
 
   return (
-    <div className="p-4 sm:p-6">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-6 gap-4">
-        <h1 className="text-2xl font-bold text-black">Inventario de Productos</h1>
-        <NewProductButton />
-      </div>
-
+    <div className="p-4 sm:p-6">    
       <ProductTable initialData={initialData} />
     </div>
   );

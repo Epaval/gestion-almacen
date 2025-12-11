@@ -1,37 +1,49 @@
- 'use client';
+"use client";
 
-import { useRouter } from 'next/navigation';
-import { useState } from 'react';
-import toast from 'react-hot-toast';
-import { 
-  PlusCircle, 
-  ArrowLeft, 
-  Package, 
-  Barcode, 
-  QrCode, 
-  FileText, 
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
+import toast from "react-hot-toast";
+import {
+  PlusCircle,
+  ArrowLeft,
+  Package,
+  Barcode,
+  QrCode,
+  FileText,
   Hash,
   Save,
-  X
-} from 'lucide-react';
+  X,
+} from "lucide-react";
 
 export default function NuevoProductoPage() {
-  const [nombre, setNombre] = useState('');
-  const [codigoBarras, setCodigoBarras] = useState('');
-  const [qrCode, setQrCode] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [cantidad, setCantidad] = useState('0');
+  const [nombre, setNombre] = useState("");
+  const [codigoBarras, setCodigoBarras] = useState("");
+  const [codigoGenerado, setCodigoGenerado] = useState("");
+  const [qrCode, setQrCode] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [cantidad, setCantidad] = useState("0");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  useEffect(() => {
+    if (!codigoBarras.trim()) {
+      // Generar un código de ejemplo (no el definitivo)
+      const preview = Math.floor(
+        1000000000000 + Math.random() * 9000000000000
+      ).toString();
+      setCodigoGenerado(preview);
+    } else {
+      setCodigoGenerado("");
+    }
+  }, [codigoBarras]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch('/api/productos', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const res = await fetch("/api/productos", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           nombre,
           codigoBarras: codigoBarras.trim() || undefined,
@@ -42,14 +54,14 @@ export default function NuevoProductoPage() {
       });
 
       if (res.ok) {
-        toast.success('✅ Producto creado exitosamente');
-        router.push('/productos');
+        toast.success("✅ Producto creado exitosamente");
+        router.push("/productos");
       } else {
         const error = await res.json().catch(() => ({}));
-        toast.error(error.message || '❌ Error al crear el producto');
+        toast.error(error.message || "❌ Error al crear el producto");
       }
     } catch (err) {
-      toast.error('❌ Error de conexión. Inténtalo de nuevo.');
+      toast.error("❌ Error de conexión. Inténtalo de nuevo.");
       console.error(err);
     } finally {
       setLoading(false);
@@ -57,13 +69,12 @@ export default function NuevoProductoPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 px-4 py-8 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-lienar-to-br from-gray-50 to-gray-100 px-4 py-8 sm:px-6 lg:px-8">
       <div className="max-w-4xl mx-auto">
-        
         {/* Header con icono y título */}
         <div className="mb-8">
           <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg">
+            <div className="p-3 bg-linear-to-r from-blue-600 to-indigo-600 rounded-2xl shadow-lg">
               <PlusCircle className="w-8 h-8 text-white" />
             </div>
             <div>
@@ -75,7 +86,7 @@ export default function NuevoProductoPage() {
               </p>
             </div>
           </div>
-          
+
           {/* Breadcrumb o botón de regreso */}
           <button
             onClick={() => router.back()}
@@ -89,7 +100,7 @@ export default function NuevoProductoPage() {
         {/* Card del formulario */}
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-200/50">
           {/* Header de la card */}
-          <div className="border-b border-gray-200 bg-gradient-to-r from-gray-50 to-white px-8 py-6">
+          <div className="border-b border-gray-200 bg-linear-to-r from-gray-50 to-white px-8 py-6">
             <div className="flex items-center gap-3">
               <div className="p-2 bg-blue-100 rounded-lg">
                 <Package className="w-5 h-5 text-blue-600" />
@@ -105,12 +116,14 @@ export default function NuevoProductoPage() {
 
           {/* Formulario */}
           <form onSubmit={handleSubmit} className="p-6 md:p-8 space-y-6">
-            
             {/* Nombre */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Package className="w-5 h-5 text-gray-700" />
-                <label htmlFor="nombre" className="block text-sm font-semibold text-gray-800">
+                <label
+                  htmlFor="nombre"
+                  className="block text-sm font-semibold text-gray-800"
+                >
                   Nombre del producto <span className="text-red-500">*</span>
                 </label>
               </div>
@@ -121,7 +134,7 @@ export default function NuevoProductoPage() {
                 className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                 value={nombre}
                 onChange={(e) => setNombre(e.target.value)}
-                placeholder="Ej: Destornillador Phillips #2"
+                placeholder="Ej: Limpiador multiusos 500ml"
               />
             </div>
 
@@ -129,28 +142,33 @@ export default function NuevoProductoPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Barcode className="w-5 h-5 text-gray-700" />
-                <label htmlFor="codigoBarras" className="block text-sm font-semibold text-gray-800">
+                <label
+                  htmlFor="codigoBarras"
+                  className="block text-sm font-semibold text-gray-800"
+                >
                   Código de barras
                 </label>
               </div>
               <input
                 id="codigoBarras"
                 type="text"
+                disabled={loading}
                 className="w-full px-4 py-3.5 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all duration-200 placeholder:text-gray-400 text-gray-900 bg-gray-50/50"
                 value={codigoBarras}
                 onChange={(e) => setCodigoBarras(e.target.value)}
-                placeholder="1234567890128 (EAN-13)"
+                placeholder="Se generará automáticamente"
               />
-              <p className="text-xs text-gray-500 ml-7">
-                Dejar vacío para generar automáticamente
-              </p>
+                          
             </div>
 
             {/* Código QR */}
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <QrCode className="w-5 h-5 text-gray-700" />
-                <label htmlFor="qrCode" className="block text-sm font-semibold text-gray-800">
+                <label
+                  htmlFor="qrCode"
+                  className="block text-sm font-semibold text-gray-800"
+                >
                   Código QR (opcional)
                 </label>
               </div>
@@ -168,7 +186,10 @@ export default function NuevoProductoPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <FileText className="w-5 h-5 text-gray-700" />
-                <label htmlFor="descripcion" className="block text-sm font-semibold text-gray-800">
+                <label
+                  htmlFor="descripcion"
+                  className="block text-sm font-semibold text-gray-800"
+                >
                   Descripción
                 </label>
               </div>
@@ -186,7 +207,10 @@ export default function NuevoProductoPage() {
             <div className="space-y-3">
               <div className="flex items-center gap-2">
                 <Hash className="w-5 h-5 text-gray-700" />
-                <label htmlFor="cantidad" className="block text-sm font-semibold text-gray-800">
+                <label
+                  htmlFor="cantidad"
+                  className="block text-sm font-semibold text-gray-800"
+                >
                   Cantidad inicial <span className="text-red-500">*</span>
                 </label>
               </div>
@@ -201,7 +225,9 @@ export default function NuevoProductoPage() {
                   onChange={(e) => setCantidad(e.target.value)}
                 />
                 <div className="absolute right-3 top-1/2 transform -translate-y-1/2">
-                  <span className="text-sm font-medium text-gray-500">unidades</span>
+                  <span className="text-sm font-medium text-gray-500">
+                    unidades
+                  </span>
                 </div>
               </div>
             </div>
@@ -211,7 +237,7 @@ export default function NuevoProductoPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="flex-1 flex items-center justify-center gap-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-75 disabled:cursor-not-allowed group"
+                className="flex-1 flex items-center justify-center gap-2 bg-linear-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold py-3.5 px-6 rounded-xl transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-75 disabled:cursor-not-allowed group"
               >
                 {loading ? (
                   <>
@@ -225,7 +251,7 @@ export default function NuevoProductoPage() {
                   </>
                 )}
               </button>
-              
+
               <button
                 type="button"
                 onClick={() => router.back()}
@@ -254,13 +280,15 @@ export default function NuevoProductoPage() {
               <div className="p-1.5 bg-blue-100 rounded-lg">
                 <Package className="w-4 h-4 text-blue-600" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-800">Producto único</h3>
+              <h3 className="text-sm font-semibold text-gray-800">
+                Producto único
+              </h3>
             </div>
             <p className="text-xs text-gray-600">
               Cada producto requiere un nombre único para evitar duplicados
             </p>
           </div>
-          
+
           <div className="bg-green-50/50 border border-green-100 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-1.5 bg-green-100 rounded-lg">
@@ -272,13 +300,15 @@ export default function NuevoProductoPage() {
               Los códigos de barras y QR ayudan en el escaneo rápido
             </p>
           </div>
-          
+
           <div className="bg-purple-50/50 border border-purple-100 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-2">
               <div className="p-1.5 bg-purple-100 rounded-lg">
                 <Hash className="w-4 h-4 text-purple-600" />
               </div>
-              <h3 className="text-sm font-semibold text-gray-800">Inventario</h3>
+              <h3 className="text-sm font-semibold text-gray-800">
+                Inventario
+              </h3>
             </div>
             <p className="text-xs text-gray-600">
               La cantidad inicial puede ajustarse después en movimientos

@@ -29,8 +29,8 @@ interface Producto {
   nombre: string;
   codigoBarras: string | null;
   qrCode: string | null;
-  cantidad: number;
-  descripcion?: string;
+  cantidadTotal: number;
+  descripcion?: string | null;
   updatedAt?: string;
 }
 
@@ -275,7 +275,7 @@ export function ProductTable({ initialData }: { initialData: ApiResponse }) {
                 </thead>
                 <tbody className="divide-y divide-gray-200 bg-white">
                   {data.productos.map((p) => {
-                    const stockStatus = getStockStatus(p.cantidad);
+                    const stockStatus = getStockStatus(p.cantidadTotal);
                     const StatusIcon = stockStatus.icon;
                     
                     return (
@@ -295,7 +295,7 @@ export function ProductTable({ initialData }: { initialData: ApiResponse }) {
                         </td>
                         <td className="px-6 py-4">
                           <div className="flex items-start gap-3">
-                            <div className="flex-shrink-0">
+                            <div className="shrink-0">
                               <div className="p-2 bg-linear-to-br from-blue-100 to-blue-200 rounded-lg">
                                 <Package className="w-5 h-5 text-blue-600" />
                               </div>
@@ -336,7 +336,7 @@ export function ProductTable({ initialData }: { initialData: ApiResponse }) {
                             <div className="p-1.5 bg-blue-50 rounded-lg">
                               <Hash className="w-4 h-4 text-blue-600" />
                             </div>
-                            <span className="text-lg font-bold text-gray-900">{p.cantidad}</span>
+                            <span className="text-lg font-bold text-gray-900">{p.cantidadTotal}</span>
                             <span className="text-sm text-gray-500">unidades</span>
                           </div>
                         </td>

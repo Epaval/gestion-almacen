@@ -1,5 +1,5 @@
- generator client {
-  provider = "prisma-client-js"
+generator client {
+  provider   = "prisma-client-js"
   engineType = "client"
 }
 
@@ -8,51 +8,70 @@ datasource db {
 }
 
 model Usuario {
-  id       Int    @id @default(autoincrement())
-  nombre   String
-  email    String @unique
-  password String
-  rol      String @default("OPERARIO")
+  id        Int         @id @default(autoincrement())
+  nombre    String
+  email     String      @unique
+  password  String
+  rol       String      @default("OPERARIO")
+  historial Historial[]
 }
 
- model Producto {
-  id          Int      @id @default(autoincrement())
-  nombre      String
-  codigoBarras String? @unique
-  qrCode      String? @unique
-  descripcion String?
-  cantidad Int    @default(0) 
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+model Producto {
+  id            Int      @id @default(autoincrement())
+  nombre        String
+  codigoBarras  String?  @unique
+  qrCode        String?  @unique
+  descripcion   String?
+  cantidadTotal Int      @default(0)
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
 
-  // Relación muchos a muchos con ubicaciones
   ubicaciones AsignacionProductoUbicacion[]
+  historial   Historial[]
 }
 
 model Ubicacion {
-  id          Int      @id @default(autoincrement())
+  id          Int    @id @default(autoincrement())
   pasillo     Int
   lado        String
   letra       String
   nivel       Int
-  nombre      String   @unique
+  nombre      String @unique
   coordenadaX Int
   coordenadaY Int
-  ancho       Int      @default(60)
-  alto        Int      @default(40)
+  ancho       Int    @default(60)
+  alto        Int    @default(40)
 
-  productos   AsignacionProductoUbicacion[]
+  productos        AsignacionProductoUbicacion[]
+  historialOrigen  Historial[]                   @relation("HistorialUbicacionOrigen")
+  historialDestino Historial[]                   @relation("HistorialUbicacionDestino")
 }
 
- 
 model AsignacionProductoUbicacion {
-  id          Int      @id @default(autoincrement())
+  id          Int @id @default(autoincrement())
   productoId  Int
   ubicacionId Int
-  cantidad    Int      @default(1)
+  cantidad    Int @default(1)
 
-  producto    Producto  @relation(fields: [productoId], references: [id], onDelete: Cascade)
-  ubicacion   Ubicacion @relation(fields: [ubicacionId], references: [id], onDelete: Cascade)
+  producto  Producto  @relation(fields: [productoId], references: [id], onDelete: Cascade)
+  ubicacion Ubicacion @relation(fields: [ubicacionId], references: [id], onDelete: Cascade)
 
-  @@unique([productoId, ubicacionId])  
+  @@unique([productoId, ubicacionId])
+}
+
+model Historial {
+  id                Int      @id @default(autoincrement())
+  productoId        Int
+  accion            String
+  cantidad          Int
+  ubicacionAnterior Int?
+  ubicacionNueva    Int?
+  usuarioId         Int
+  fecha             DateTime @default(now())
+
+  producto Producto @relation(fields: [productoId], references: [id])
+  usuario  Usuario  @relation(fields: [usuarioId], references: [id])
+
+  ubicacionOrigen  Ubicacion? @relation("HistorialUbicacionOrigen", fields: [ubicacionAnterior], references: [id])
+  ubicacionDestino Ubicacion? @relation("HistorialUbicacionDestino", fields: [ubicacionNueva], references: [id])
 }

@@ -5,7 +5,7 @@ import 'next-auth/jwt';
 // Extender el tipo User para incluir 'rol'
 declare module 'next-auth' {
   interface User {
-    rol?: string; // o 'ADMIN' | 'OPERARIO' | 'SUPERVISOR' si prefieres literal
+    rol?: string;  
   }
 
   interface Session {

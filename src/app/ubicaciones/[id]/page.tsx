@@ -50,14 +50,14 @@ export default async function UbicacionDetallePage({ params }: Props) {
       id: {
         notIn: ubicacion.productos.map(a => a.productoId),
       },
-      cantidad: { gt: 0 },
+      cantidadTotal: { gt: 0 },
     },
     select: { 
       id: true, 
       nombre: true, 
       codigoBarras: true, 
       qrCode: true, 
-      cantidad: true,
+      cantidadTotal: true,
       descripcion: true 
     },
     orderBy: { nombre: 'asc' }
@@ -75,10 +75,10 @@ export default async function UbicacionDetallePage({ params }: Props) {
       // Verificar stock total disponible
       const producto = await prisma.producto.findUnique({
         where: { id: productoId },
-        select: { cantidad: true },
+        select: { cantidadTotal: true },
       });
 
-      if (!producto || cantidad > producto.cantidad) {
+      if (!producto || cantidad > producto.cantidadTotal) {
         console.error('Cantidad excede el stock total');
         return;
       }
@@ -109,7 +109,7 @@ export default async function UbicacionDetallePage({ params }: Props) {
         include: { producto: true },
       });
 
-      if (!asignacion || nuevaCantidad > asignacion.producto.cantidad) {
+      if (!asignacion || nuevaCantidad > asignacion.producto.cantidadTotal) {
         console.error('Cantidad excede el stock total');
         return;
       }
@@ -297,7 +297,7 @@ export default async function UbicacionDetallePage({ params }: Props) {
                                     </span>
                                   )}
                                   <span className="inline-flex items-center gap-1 px-2 py-1 bg-emerald-50 text-emerald-700 rounded text-xs">
-                                    <span className="font-medium">Stock total:</span> {a.producto.cantidad}
+                                    <span className="font-medium">Stock total:</span> {a.producto.cantidadTotal}
                                   </span>
                                 </div>
                               </div>
@@ -313,7 +313,7 @@ export default async function UbicacionDetallePage({ params }: Props) {
                                     type="number"
                                     name="cantidad"
                                     min="1"
-                                    max={a.producto.cantidad}
+                                    max={a.producto.cantidadTotal}
                                     defaultValue={a.cantidad}
                                     className="w-24 pl-10 pr-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-gray-900"
                                   />
@@ -340,15 +340,15 @@ export default async function UbicacionDetallePage({ params }: Props) {
                         <div className="mt-4">
                           <div className="flex justify-between text-sm text-gray-600 mb-1">
                             <span>Cantidad asignada vs stock total</span>
-                            <span>{a.cantidad} / {a.producto.cantidad}</span>
+                            <span>{a.cantidad} / {a.producto.cantidadTotal}</span>
                           </div>
                           <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                             <div 
                               className={`h-full rounded-full ${
-                                a.cantidad > a.producto.cantidad * 0.8 ? 'bg-red-500' : 
-                                a.cantidad > a.producto.cantidad * 0.5 ? 'bg-amber-500' : 'bg-emerald-500'
+                                a.cantidad > a.producto.cantidadTotal * 0.8 ? 'bg-red-500' : 
+                                a.cantidad > a.producto.cantidadTotal * 0.5 ? 'bg-amber-500' : 'bg-emerald-500'
                               }`}
-                              style={{ width: `${(a.cantidad / a.producto.cantidad) * 100}%` }}
+                              style={{ width: `${(a.cantidad / a.producto.cantidadTotal) * 100}%` }}
                             />
                           </div>
                         </div>
@@ -408,7 +408,7 @@ export default async function UbicacionDetallePage({ params }: Props) {
                           <option value="">Selecciona un producto</option>
                           {productosDisponibles.map((p) => (
                             <option key={p.id} value={p.id}>
-                              {p.nombre} • Stock: {p.cantidad} unidades
+                              {p.nombre} • Stock: {p.cantidadTotal} unidades
                             </option>
                           ))}
                         </select>
@@ -458,7 +458,7 @@ export default async function UbicacionDetallePage({ params }: Props) {
                             <div className="font-medium text-sm text-gray-900 mb-1">{p.nombre}</div>
                             <div className="flex items-center justify-between text-xs">
                               <span className="text-gray-500">Stock:</span>
-                              <span className="font-semibold text-emerald-700">{p.cantidad} unidades</span>
+                              <span className="font-semibold text-emerald-700">{p.cantidadTotal} unidades</span>
                             </div>
                           </div>
                         ))}
