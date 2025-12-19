@@ -2,7 +2,7 @@
 import { prisma } from '@/lib/prisma';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { 
+ import { 
   ArrowLeft, 
   Package, 
   MapPin, 
@@ -26,7 +26,6 @@ export default async function UbicacionDetallePage({ params }: Props) {
   const { id } = await params;
   const idNum = parseInt(id, 10);
   if (isNaN(idNum)) return notFound();
-
   // Cargar ubicación con sus asignaciones
   const ubicacion = await prisma.ubicacion.findUnique({
     where: { id: idNum },
