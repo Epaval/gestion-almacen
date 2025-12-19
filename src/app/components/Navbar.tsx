@@ -1,10 +1,10 @@
- // src/app/components/Navbar.tsx
-'use client';
+ 'use client';
 
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline';
+import { signOut } from 'next-auth/react'; // ✅ Importa signOut
 
 // ✅ Importa el nuevo componente de búsqueda
 import BuscadorUbicaciones from './BuscadorUbicaciones';
@@ -19,6 +19,10 @@ const Navbar = () => {
     { name: 'Mapa', href: '/mapa' },
   ];
 
+  const handleLogout = () => {
+    signOut({ callbackUrl: '/login' });
+  };
+
   return (
     <>
       {/* Barra de navegación principal */}
@@ -31,7 +35,7 @@ const Navbar = () => {
             </div>
 
             {/* Menú desktop */}
-            <nav className="hidden md:flex items-center space-x-6">
+            <nav className="hidden md:flex items-center space-x-4">
               {navItems.map((item) => (
                 <Link
                   key={item.href}
@@ -51,6 +55,14 @@ const Navbar = () => {
               >
                 + Nuevo Producto
               </Link>
+
+              {/* ✅ Botón de logout (desktop) */}
+              <button
+                onClick={handleLogout}
+                className="text-gray-700 hover:text-red-600 hover:bg-gray-100 px-3 py-2 rounded-md text-sm font-medium transition"
+              >
+                Cerrar sesión
+              </button>
             </nav>
 
             {/* Menú móvil (hamburguesa) */}
@@ -94,12 +106,23 @@ const Navbar = () => {
               >
                 + Nuevo Producto
               </Link>
+
+              {/* ✅ Botón de logout (móvil) */}
+              <button
+                onClick={() => {
+                  setIsMenuOpen(false);
+                  handleLogout();
+                }}
+                className="mt-2 block w-full text-center text-red-600 px-4 py-2 rounded-lg text-base font-medium hover:bg-red-50 transition"
+              >
+                Cerrar sesión
+              </button>
             </div>
           </div>
         )}
       </header>
 
-      {/* ✅ Buscador global de ubicaciones (siempre visible) */}
+      {/* ✅ Buscador global de ubicaciones */}
       <div className="bg-gray-50 border-b border-gray-200 py-3">
         <BuscadorUbicaciones />
       </div>
